@@ -1,0 +1,51 @@
+appId: net.chabibnr.devbrowser
+productName: DEV Browser
+
+directories:
+  output: release
+  buildResources: build
+
+# Sumber pembaruan otomatis. Nilai di sini ikut ditulis ke `app-update.yml`
+# di dalam paket, dan itulah satu-satunya tempat nama repo disebut — kode
+# aplikasi tidak pernah menyebutkannya.
+# Rilisnya harus berstatus published (bukan draft) dan reponya publik.
+publish:
+  provider: github
+  owner: chabibnr
+  repo: dev-browser
+
+# Kode sudah di-bundle ke out/, jadi yang tersisa hanyalah dependensi runtime.
+# `node_modules/**` WAJIB ada: tanpa baris ini electron-updater tidak ikut
+# terpaket sama sekali (sudah diverifikasi — asar-nya kosong dari node_modules),
+# dan aplikasi terpasang langsung gagal saat memeriksa pembaruan. Yang ikut
+# hanya pohon dependensi produksi; devDependencies disaring electron-builder
+# sendiri.
+# icon.png 4096px di root sengaja TIDAK ikut: itu berkas sumber 6,8 MB,
+# sedangkan yang dipakai aplikasi adalah versi 512px di assets/.
+files:
+  - out/**
+  - assets/**
+  - node_modules/**
+  - package.json
+
+asar: true
+
+win:
+  # electron-builder membuat .ico multi-ukuran (16/32/48/256) dari PNG ini,
+  # lalu menyematkannya ke .exe dan installer.
+  icon: assets/icon.png
+  target:
+    - nsis
+  # TANPA SPASI, sengaja — bukan ${productName} yang berisi "DEV Browser".
+  # electron-updater mencari berkas persis seperti tertulis di latest.yml,
+  # sedangkan GitHub mengganti spasi pada nama aset yang diunggah. Keduanya tidak
+  # akan pernah cocok, dan updater berakhir 404. Sudah terlihat langsung:
+  # latest.yml menulis "DEV-Browser-..." untuk berkas bernama "DEV Browser-...".
+  artifactName: dev-browser-${version}-setup.${ext}
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: DEV Browser

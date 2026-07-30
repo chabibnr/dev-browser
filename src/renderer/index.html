@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Dev Browser</title>
+    <!--
+      Halaman ini hanya pernah memuat bundle kita sendiri — tidak ada konten pihak
+      ketiga. `unsafe-inline` dibutuhkan oleh preamble React Refresh saat mode dev.
+      `img-src https:` diperlukan untuk menampilkan favicon situs di tab strip.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: http:; connect-src 'self' ws: wss:; frame-src 'none'; object-src 'none'"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

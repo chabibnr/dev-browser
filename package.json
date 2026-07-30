@@ -1,0 +1,47 @@
+{
+  "name": "dev-browser",
+  "version": "0.8.0",
+  "productName": "DEV Browser",
+  "description": "Browser Chromium dengan sesi terisolasi per tab",
+  "main": "./out/main/index.js",
+  "author": {
+    "name": "Chabib Nurozak",
+    "email": "chabibnurozak@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chabibnr/dev-browser.git"
+  },
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "postinstall": "install-electron",
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
+    "typecheck:web": "tsc -p tsconfig.web.json --noEmit",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dist": "npm run build && electron-builder --win"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "playwright-core": "^1.62.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "typescript": "^6.0.3",
+    "vite": "^7.3.6",
+    "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
+  }
+}
