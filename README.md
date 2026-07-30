@@ -212,19 +212,24 @@ electron-updater membacanya dari situ.
 
 ### Menerbitkan versi baru
 
-Rilisnya otomatis. Yang perlu Anda lakukan hanya dua hal:
+`master` adalah tempat kerja sehari-hari dan **tidak pernah menerbitkan apa
+pun**. Rilis terjadi ketika `master` di-merge ke branch **`release`**:
 
 1. Naikkan `version` di `package.json`.
 2. Tambahkan entrinya ke `src/shared/changelog.ts`.
+3. Merge `master` ke `release`, lalu push.
 
-Push ke `master`, dan `.github/workflows/release.yml` mengerjakan sisanya:
-menjalankan test, membangun installer, menyusun catatan rilis dari CHANGELOG,
-lalu menerbitkan rilis GitHub bertag `v<versi>` berisi installer, `.blockmap`,
-dan `latest.yml`.
+```bash
+git checkout release && git merge master && git push
+```
 
-**Yang memicunya adalah perubahan versi, bukan setiap push.** Commit yang tidak
+Sisanya dikerjakan `.github/workflows/release.yml`: menjalankan test, membangun
+installer, menyusun catatan rilis dari CHANGELOG, lalu menerbitkan rilis GitHub
+bertag `v<versi>` berisi installer, `.blockmap`, dan `latest.yml`.
+
+Di atas pemisahan branch itu masih ada **penjaga versi**: merge yang tidak
 menaikkan `version` berhenti di langkah pertama tanpa membangun apa pun. Tanpa
-penjaga itu, push kedua akan menabrak tag yang sudah ada — atau lebih buruk,
+penjaga itu, merge kedua akan menabrak tag yang sudah ada — atau lebih buruk,
 menimpa installer yang sudah beredar dengan isi berbeda di bawah nomor versi
 yang sama.
 
@@ -241,7 +246,7 @@ sama sekali.
 Kalau perlu manual: `npm run dist`, lalu unggah ketiga berkas itu ke rilis
 GitHub bertag `v<versi>` dengan status published.
 
-Dua hal yang mudah menjebak:
+Tiga hal yang mudah menjebak:
 
 - **`electron-updater` harus ada di `dependencies`, bukan `devDependencies`,**
   dan `node_modules/**` harus tercantum di `files`. Salah satunya saja hilang,

@@ -1,14 +1,16 @@
 name: Rilis
 
-# Yang memicu rilis adalah **perubahan versi**, bukan setiap push.
+# Rilis hanya terjadi di branch `release`. `master` adalah tempat kerja
+# sehari-hari dan tidak pernah menerbitkan apa pun; merilis berarti me-merge
+# master ke release dengan sengaja.
 #
-# Tanpa penjaga itu, commit kedua ke master akan menabrak tag yang sudah ada dan
-# gagal — atau lebih buruk, menimpa installer yang sudah beredar dengan isi
-# berbeda di bawah nomor versi yang sama. Push yang tidak menaikkan `version`
-# di package.json berhenti di langkah pertama tanpa membangun apa pun.
+# Di atas itu masih ada penjaga versi: merge yang tidak menaikkan `version` di
+# package.json berhenti di langkah pertama tanpa membangun apa pun. Tanpa itu,
+# merge kedua akan menabrak tag yang sudah ada — atau lebih buruk, menimpa
+# installer yang sudah beredar dengan isi berbeda di bawah nomor versi sama.
 on:
   push:
-    branches: [master]
+    branches: [release]
   workflow_dispatch:
 
 permissions:

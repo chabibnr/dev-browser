@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import yaml from 'js-yaml'
 import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import os from 'node:os'
@@ -17,6 +18,21 @@ const builderYml = fs.readFileSync(path.join(root, 'electron-builder.yml'), 'utf
 const version = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf-8')).version
 
 describe('workflow rilis', () => {
+  it('hanya dipicu branch release, tidak pernah master', () => {
+    // master adalah tempat kerja sehari-hari. Kalau pemicunya kembali ke master,
+    // commit pertama yang kebetulan menaikkan versi langsung terbit ke publik
+    // tanpa ada seorang pun yang bermaksud merilis.
+    //
+    // Kuncinya dibaca sebagai boolean `true`, bukan string "on" — YAML 1.1
+    // memperlakukan on/off/yes/no sebagai boolean, dan GitHub tetap memakainya.
+    const parsed = yaml.load(workflow) as Record<string, unknown>
+    const trigger = (parsed[String(true)] ?? parsed['on']) as {
+      push?: { branches?: string[] }
+    }
+
+    expect(trigger.push?.branches).toEqual(['release'])
+  })
+
   it('mengunggah nama berkas yang sama persis dengan artifactName', () => {
     // Workflow menyebut nama installer secara literal. Kalau artifactName di
     // electron-builder.yml diubah, langkah unggah gagal — setelah build selesai.
