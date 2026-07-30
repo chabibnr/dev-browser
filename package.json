@@ -1,6 +1,6 @@
 {
   "name": "dev-browser",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "productName": "DEV Browser",
   "description": "Browser Chromium dengan sesi terisolasi per tab",
   "main": "./out/main/index.js",
@@ -34,6 +34,7 @@
     "electron": "^43.2.0",
     "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
+    "js-yaml": "^5.2.2",
     "playwright-core": "^1.62.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

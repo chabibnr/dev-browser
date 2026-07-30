@@ -153,6 +153,69 @@ describe('UI chrome', () => {
     expect(result!.hovered.bg).not.toBe(result!.normal.bg)
   })
 
+  it('memberi tombol Hapus warna danger, dan mengisinya penuh saat di-hover', async () => {
+    /*
+     * Perangkap yang sama dengan tombol primary di atas: `.page__action:hover`
+     * berbobot sama dengan `.page__action--danger:hover`, jadi yang menang
+     * adalah yang ditulis belakangan. Kalau urutannya terbalik, latar merahnya
+     * tertimpa abu-abu dan tombolnya kembali tampak seperti tombol biasa.
+     */
+    const result = await app.evaluate(async () => {
+      const hooks = (globalThis as unknown as { __browser: { manager: any } }).__browser
+      const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms))
+      const wc = hooks.manager.window.contentView.children[0].webContents
+
+      const read = (): Promise<{ bg: string; fg: string; token: string } | null> =>
+        wc.executeJavaScript(`
+          (() => {
+            const btn = document.querySelector('.page__action--danger')
+            if (!btn) return null
+            const s = getComputedStyle(btn)
+            return {
+              bg: s.backgroundColor,
+              fg: s.color,
+              token: getComputedStyle(document.documentElement)
+                .getPropertyValue('--danger').trim()
+            }
+          })()
+        `)
+
+      const normal = await read()
+      if (!normal) return null
+
+      wc.debugger.attach('1.3')
+      const { root } = await wc.debugger.sendCommand('DOM.getDocument')
+      const { nodeId } = await wc.debugger.sendCommand('DOM.querySelector', {
+        nodeId: root.nodeId,
+        selector: '.page__action--danger'
+      })
+      await wc.debugger.sendCommand('CSS.enable')
+      await wc.debugger.sendCommand('CSS.forcePseudoState', {
+        nodeId,
+        forcedPseudoClasses: ['hover']
+      })
+      await sleep(300)
+      const hovered = await read()
+      wc.debugger.detach()
+
+      return { normal, hovered }
+    })
+
+    expect(result).not.toBeNull()
+
+    // Merah token --danger (#c0392b) dipakai apa adanya, bukan warna lain.
+    const danger = 'rgb(192, 57, 43)'
+    expect(result!.normal!.token).toBe('#c0392b')
+
+    // Keadaan diam: teks merah di atas latar biasa — tidak berebut perhatian
+    // dengan tombol biru `Buka` di baris yang sama.
+    expect(result!.normal!.fg).toBe(danger)
+
+    // Saat di-hover barulah merahnya penuh, dengan teks putih di atasnya.
+    expect(result!.hovered!.bg).toBe(danger)
+    expect(result!.hovered!.fg).toBe('rgb(255, 255, 255)')
+  })
+
   it('menemukan ikon aplikasi di path yang dipakai window', async () => {
     // Diperiksa lewat path yang sama persis dengan yang dipakai BaseWindow, jadi
     // salah folder atau ikon yang gagal didekode langsung ketahuan. Lebih kuat

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import yaml from 'js-yaml'
+import { load } from 'js-yaml'
 import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import os from 'node:os'
@@ -23,10 +23,11 @@ describe('workflow rilis', () => {
     // commit pertama yang kebetulan menaikkan versi langsung terbit ke publik
     // tanpa ada seorang pun yang bermaksud merilis.
     //
-    // Kuncinya dibaca sebagai boolean `true`, bukan string "on" — YAML 1.1
-    // memperlakukan on/off/yes/no sebagai boolean, dan GitHub tetap memakainya.
-    const parsed = yaml.load(workflow) as Record<string, unknown>
-    const trigger = (parsed[String(true)] ?? parsed['on']) as {
+    // Kuncinya dibaca dua cara: YAML 1.1 memperlakukan `on` sebagai boolean
+    // true, YAML 1.2 sebagai string biasa. js-yaml 5 memakai yang kedua, tapi
+    // itu bergantung versi parser dan bukan sesuatu yang layak dikunci di sini.
+    const parsed = load(workflow) as Record<string, unknown>
+    const trigger = (parsed['on'] ?? parsed[String(true)]) as {
       push?: { branches?: string[] }
     }
 

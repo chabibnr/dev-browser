@@ -116,7 +116,7 @@ export default function Manager(): React.JSX.Element {
                     Ganti nama
                   </button>
                   <button
-                    className="page__action"
+                    className="page__action page__action--danger"
                     onClick={() => void window.browser.manager.deleteProfile(profile.id)}
                   >
                     Hapus

@@ -17,6 +17,8 @@
   --text-disabled: #b4b8be;
   --scrim: #e9ecef;
   --accent: #1a73e8;
+  /* Merah untuk aksi yang menghancurkan dan untuk keadaan galat. */
+  --danger: #c0392b;
   --strip-h: 40px;
   --toolbar-h: 48px;
 }
@@ -242,7 +244,7 @@ body {
 }
 
 .tab__close:hover {
-  background: #c0392b;
+  background: var(--danger);
   color: #fff;
 }
 
@@ -450,7 +452,7 @@ body {
  */
 .findbar__input--empty,
 .findbar__input--empty:focus {
-  border-color: #c0392b;
+  border-color: var(--danger);
 }
 
 .findbar__count {
@@ -823,7 +825,7 @@ body {
 
 .dialog__error {
   margin: 0 0 12px;
-  color: #c0392b;
+  color: var(--danger);
   font-size: 12px;
 }
 
@@ -1074,7 +1076,7 @@ body {
 }
 
 .upd__status--error {
-  color: #c0392b;
+  color: var(--danger);
 }
 
 /* Riwayat perubahan: tiap versi terlipat agar daftarnya tetap ringkas. */
@@ -1158,6 +1160,27 @@ body {
 .page__action--primary:hover {
   background: color-mix(in srgb, var(--accent) 86%, #000);
   border-color: color-mix(in srgb, var(--accent) 86%, #000);
+  color: #ffffff;
+}
+
+/*
+ * Aksi menghancurkan. Sengaja TIDAK berlatar penuh seperti primary: satu baris
+ * profil sudah punya tombol biru `Buka`, dan dua tombol berlatar penuh akan
+ * saling berebut perhatian — yang menonjol justru harus tetap aksi normalnya.
+ * Merahnya penuh saat di-hover, tepat ketika kursor sudah berada di atasnya.
+ *
+ * Harus diletakkan SETELAH `.page__action:hover` (baris ~540). Bobotnya sama
+ * persis (satu kelas + satu pseudo-class), jadi yang menang adalah yang terakhir
+ * ditulis; dibalik urutannya, latar merah tertimpa abu-abu.
+ */
+.page__action--danger {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+  color: var(--danger);
+}
+
+.page__action--danger:hover {
+  background: var(--danger);
+  border-color: var(--danger);
   color: #ffffff;
 }
 

@@ -13,6 +13,14 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    version: '0.8.1',
+    date: '2026-07-30',
+    changes: [
+      'Tombol Hapus di Window Manager kini berwarna danger, sehingga tidak lagi tampak sama dengan Ganti nama di sebelahnya',
+      'Warna merah dijadikan token --danger dan dipakai bersama oleh tombol tutup tab serta penanda galat'
+    ]
+  },
+  {
     version: '0.8.0',
     date: '2026-07-30',
     changes: [
