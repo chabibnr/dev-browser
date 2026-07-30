@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DEV Browser — satu window, sebanyak apa pun akun</title>
+
+    <meta
+      name="description"
+      content="Browser Chromium di mana setiap tab punya sesinya sendiri. Login ke lima akun di situs yang sama, berdampingan dalam satu window, tiap tab diberi nama dan warna sendiri."
+    />
+    <meta name="theme-color" content="#f2eee5" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="DEV Browser — satu window, sebanyak apa pun akun" />
+    <meta
+      property="og:description"
+      content="Setiap tab punya cookie dan storage sendiri. Seperti multi-profile Chrome, tapi semua profil hidup berdampingan dalam satu window."
+    />
+    <meta property="og:image" content="icon.png" />
+
+    <link rel="icon" href="icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+
+    <script>
+      /*
+       * Animasi masuk menyembunyikan hampir seluruh isi halaman sampai ada yang
+       * menampilkannya. Itu taruhan yang buruk kalau dipasang begitu saja:
+       * app.js gagal dimuat sekali saja — jaringan putus di tengah, berkasnya
+       * salah nama setelah dipindah — dan pengunjung mendapat halaman kosong.
+       *
+       * Jadi penyembunyiannya baru berlaku setelah baris ini berjalan, dan ada
+       * penghitung waktu yang membuka paksa semuanya andai pengamat gulir tidak
+       * pernah hidup. Halaman tanpa animasi jauh lebih baik daripada halaman
+       * tanpa isi.
+       */
+      document.documentElement.classList.add('js');
+      setTimeout(function () {
+        document.querySelectorAll('.reveal:not(.is-in)').forEach(function (el) {
+          el.classList.add('is-in');
+        });
+      }, 2500);
+    </script>
+  </head>
+
+  <body>
+    <!-- Butiran kertas. Dibuat di klien lewat feTurbulence supaya tidak ada
+         berkas tekstur yang perlu diunduh. -->
+    <svg class="grain" aria-hidden="true">
+      <filter id="grain-filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" />
+      </filter>
+      <rect width="100%" height="100%" filter="url(#grain-filter)" />
+    </svg>
+
+    <header class="masthead">
+      <a class="brand" href="#atas">
+        <img src="icon.png" alt="" width="28" height="28" />
+        <span>DEV&nbsp;Browser</span>
+      </a>
+      <nav class="masthead__nav">
+        <a href="#cara-kerja">Cara kerja</a>
+        <a href="#fitur">Fitur</a>
+        <a href="#batasan">Batasan</a>
+        <a class="masthead__repo" href="https://github.com/chabibnr/dev-browser">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="atas">
+      <!-- ------------------------------------------------------------ hero -->
+      <section class="hero">
+        <div class="hero__text">
+          <p class="eyebrow reveal">
+            <span class="eyebrow__rule"></span>
+            Chromium · Windows · sumber terbuka
+          </p>
+
+          <h1 class="reveal" style="--d: 60ms">
+            Satu window.<br />
+            Sebanyak apa pun <em>akun</em>.
+          </h1>
+
+          <p class="lede reveal" style="--d: 120ms">
+            Setiap tab mendapat cookie, localStorage, dan cache-nya sendiri. Lima akun di situs
+            yang sama bisa terbuka berdampingan tanpa saling menendang keluar — dan tiap tab
+            Anda beri nama sendiri, bukan judul halaman yang berubah-ubah.
+          </p>
+
+          <div class="cta reveal" style="--d: 180ms">
+            <a class="btn btn--solid" id="unduh" href="https://github.com/chabibnr/dev-browser/releases/latest">
+              <span class="btn__label">Unduh untuk Windows</span>
+              <span class="btn__meta" id="unduh-meta">memuat versi…</span>
+            </a>
+            <a class="btn btn--ghost" href="https://github.com/chabibnr/dev-browser">
+              Baca kodenya
+            </a>
+          </div>
+
+          <p class="note reveal" style="--d: 240ms">
+            Gratis, MIT. Pembaruan berikutnya dipasang sendiri dari dalam aplikasi.
+          </p>
+        </div>
+
+        <!-- Demo, bukan tangkapan layar: keempat tab memakai URL yang sama
+             persis dan login sebagai akun berbeda. Klik tabnya. -->
+        <figure class="demo reveal" style="--d: 300ms">
+          <div class="demo__frame" id="demo">
+            <div class="chrome">
+              <div class="strip" role="tablist" aria-label="Contoh tab">
+                <button class="tab is-active" role="tab" data-color="#5b9dff" data-user="budi@toko-a.id" data-role="Pemilik toko" data-init="BA">
+                  <span class="tab__dot"></span>
+                  <span class="tab__name">Toko A</span>
+                </button>
+                <button class="tab" role="tab" data-color="#4fc27f" data-user="ops@toko-b.id" data-role="Admin gudang" data-init="TB">
+                  <span class="tab__dot"></span>
+                  <span class="tab__name">Toko B</span>
+                </button>
+                <button class="tab" role="tab" data-color="#f0913a" data-user="qa@staging.id" data-role="Penguji" data-init="QA">
+                  <span class="tab__dot"></span>
+                  <span class="tab__name">Staging</span>
+                </button>
+                <button class="tab" role="tab" data-color="#a97bf0" data-user="me@pribadi.id" data-role="Akun pribadi" data-init="PR">
+                  <span class="tab__dot"></span>
+                  <span class="tab__name">Pribadi</span>
+                </button>
+                <span class="strip__plus" aria-hidden="true">+</span>
+                <span class="strip__wc" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+
+              <div class="toolbar">
+                <span class="toolbar__nav" aria-hidden="true">
+                  <i class="ic ic--back"></i><i class="ic ic--fwd"></i><i class="ic ic--rel"></i>
+                </span>
+                <span class="omni" id="omni">
+                  <i class="omni__lock"></i>
+                  <span class="omni__url">app.contoh.id/dashboard</span>
+                </span>
+                <span class="toolbar__nav" aria-hidden="true">
+                  <i class="ic ic--dev"></i>
+                </span>
+              </div>
+
+              <div class="page">
+                <div class="page__card" id="page-card">
+                  <div class="avatar" id="avatar">BA</div>
+                  <div class="page__who">
+                    <strong id="who-user">budi@toko-a.id</strong>
+                    <span id="who-role">Pemilik toko</span>
+                  </div>
+                  <span class="page__badge">sesi&nbsp;#<span id="who-n">1</span></span>
+                </div>
+                <div class="page__bars" aria-hidden="true">
+                  <i style="width: 82%"></i><i style="width: 64%"></i><i style="width: 71%"></i>
+                  <i style="width: 43%"></i>
+                </div>
+              </div>
+            </div>
+
+            <b class="pin pin--1" aria-hidden="true">1</b>
+            <b class="pin pin--2" aria-hidden="true">2</b>
+            <b class="pin pin--3" aria-hidden="true">3</b>
+          </div>
+
+          <figcaption class="demo__hint">
+            <span class="demo__hint-arrow" aria-hidden="true">↑</span>
+            Klik tabnya. URL-nya tidak berubah — yang berubah akunnya.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ------------------------------------------------------- cara kerja -->
+      <section class="band" id="cara-kerja">
+        <ol class="legend">
+          <li class="reveal">
+            <b>1</b>
+            <h3>Nama pilihan Anda</h3>
+            <p>
+              Judul halaman berubah tiap kali Anda pindah menu; nama tab tidak. Tulis
+              <em>Toko A</em>, dan tab itu tetap <em>Toko A</em>. Kosongkan namanya untuk kembali
+              mengikuti judul halaman.
+            </p>
+          </li>
+          <li class="reveal" style="--d: 80ms">
+            <b>2</b>
+            <h3>Sesi yang benar-benar terpisah</h3>
+            <p>
+              Tiap tab memanggil <code>session.fromPath()</code> dengan foldernya sendiri.
+              Pemisahan cookie dan storage dikerjakan mesin Chromium, bukan lapisan tempelan di
+              atasnya.
+            </p>
+          </li>
+          <li class="reveal" style="--d: 160ms">
+            <b>3</b>
+            <h3>Warna yang merambat</h3>
+            <p>
+              Warna tab ikut mewarnai blok address bar. Sekali lirik cukup untuk tahu akun mana
+              yang sedang Anda pegang — sebelum menekan tombol hapus di akun yang salah.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ---------------------------------------------------------- masalah -->
+      <section class="band band--tint">
+        <div class="split">
+          <div class="split__text reveal">
+            <p class="eyebrow"><span class="eyebrow__rule"></span> Kenapa ada</p>
+            <h2>Chrome memaksa satu profil per window.</h2>
+            <p>
+              Mengelola lima akun berarti lima window, lima tombol taskbar, dan tebak-tebakan
+              window mana milik siapa. Isolasinya benar, penyajiannya yang salah.
+            </p>
+            <p>
+              DEV Browser menaruh kelimanya sebagai tab yang berdampingan — masing-masing tetap
+              punya sesi sendiri, tetapi terlihat sekaligus, diberi nama, dan diberi warna.
+            </p>
+          </div>
+
+          <div class="compare reveal" style="--d: 100ms" aria-hidden="true">
+            <div class="compare__col">
+              <span class="compare__label">Chrome</span>
+              <div class="wins">
+                <i style="--c: #5b9dff"></i><i style="--c: #4fc27f"></i><i style="--c: #f0913a"></i>
+                <i style="--c: #a97bf0"></i><i style="--c: #ee74b4"></i>
+              </div>
+              <span class="compare__cap">5 window</span>
+            </div>
+            <div class="compare__col">
+              <span class="compare__label">DEV Browser</span>
+              <div class="wins wins--one">
+                <i class="wins__one">
+                  <u style="--c: #5b9dff"></u><u style="--c: #4fc27f"></u><u style="--c: #f0913a"></u>
+                  <u style="--c: #a97bf0"></u><u style="--c: #ee74b4"></u>
+                </i>
+              </div>
+              <span class="compare__cap">1 window</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------ fitur -->
+      <section class="band" id="fitur">
+        <h2 class="band__head reveal">Yang ada di dalamnya</h2>
+
+        <div class="grid">
+          <article class="card reveal">
+            <span class="card__no">01</span>
+            <h3>Window Manager</h3>
+            <p>
+              Window pembuka berisi daftar profil. Menutup window tidak menghapusnya — tabnya
+              disimpan dan bisa dibuka lagi kapan pun, bukan hanya yang terakhir ditutup.
+            </p>
+          </article>
+
+          <article class="card reveal" style="--d: 60ms">
+            <span class="card__no">02</span>
+            <h3>Hidup di tray</h3>
+            <p>
+              Window Manager tidak memakan slot taskbar. Klik kiri ikon tray memunculkannya,
+              klik kanan langsung membuka salah satu profil.
+            </p>
+          </article>
+
+          <article class="card reveal" style="--d: 120ms">
+            <span class="card__no">03</span>
+            <h3>Uji responsif</h3>
+            <p>
+              Banyak viewport device dalam satu window, membungkus ke baris berikutnya saat tidak
+              muat, dengan gulir dan klik yang tersinkron. Semuanya memakai sesi tab asalnya —
+              jadi Anda menguji tampilan dalam keadaan sudah login.
+            </p>
+            <div class="vps" aria-hidden="true">
+              <i style="--w: 26px; --h: 46px"></i><i style="--w: 34px; --h: 48px"></i>
+              <i style="--w: 44px; --h: 40px"></i><i style="--w: 58px; --h: 38px"></i>
+              <i style="--w: 30px; --h: 44px"></i>
+            </div>
+          </article>
+
+          <article class="card reveal" style="--d: 180ms">
+            <span class="card__no">04</span>
+            <h3>Sandi terenkripsi kunci OS</h3>
+            <p>
+              Simpan dan isi otomatis, dienkripsi lewat DPAPI. Kalau enkripsi sistem tidak
+              tersedia, penyimpanan <em>ditolak</em> — tidak ada jalur mundur ke teks biasa.
+            </p>
+          </article>
+
+          <article class="card reveal" style="--d: 240ms">
+            <span class="card__no">05</span>
+            <h3>Proxy &amp; User-Agent per sesi</h3>
+            <p>
+              Tiap tab bisa keluar lewat proxy berbeda, lengkap dengan autentikasinya. Download
+              manager mencatat sesi asal tiap unduhan.
+            </p>
+          </article>
+
+          <article class="card reveal" style="--d: 300ms">
+            <span class="card__no">06</span>
+            <h3>Pembaruan otomatis</h3>
+            <p>
+              Diperiksa saat aplikasi dijalankan, diunduh di latar, dipasang <em>saat Anda
+              menyetujuinya</em>. Karena memakai peta blok, pembaruan kecil memindahkan sekitar
+              satu megabyte, bukan seratus.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------- batasan -->
+      <section class="band band--tint" id="batasan">
+        <div class="split split--narrow">
+          <div class="split__text reveal">
+            <p class="eyebrow"><span class="eyebrow__rule"></span> Sebelum mengunduh</p>
+            <h2>Hal yang tidak bisa dilakukannya.</h2>
+            <p>
+              Lebih baik Anda tahu sekarang daripada setelah memasang.
+            </p>
+          </div>
+
+          <ul class="limits reveal" style="--d: 100ms">
+            <li>
+              <strong>Tidak ada Widevine.</strong> Layanan ber-DRM seperti Netflix dan Spotify
+              tidak akan berjalan. Electron tidak menyertakan modulnya.
+            </li>
+            <li>
+              <strong>Buildnya belum ditandatangani.</strong> SmartScreen akan memperingatkan
+              pemasangan pertama — pilih <em>More info → Run anyway</em>. Menghilangkannya butuh
+              sertifikat, bukan perubahan kode.
+            </li>
+            <li>
+              <strong>Login Google mungkin ditolak.</strong> Google memblokir sign-in dari
+              <em>embedded browser framework</em> berdasarkan User-Agent. Menyetel UA Chrome per
+              sesi biasanya cukup.
+            </li>
+            <li>
+              <strong>Tiap tab satu proses Chromium.</strong> Sekitar 80–150&nbsp;MB per tab yang
+              terbuka. Tab hasil restore baru dimuat ketika diklik.
+            </li>
+            <li>
+              <strong>Windows saja, untuk sekarang.</strong> Installer yang dirilis hanya NSIS
+              x64.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ----------------------------------------------------------- penutup -->
+      <section class="closer">
+        <div class="closer__inner reveal">
+          <h2>Ambil satu berkas, jalankan.</h2>
+          <p id="rilis-baris">Rilis terbaru dimuat dari GitHub…</p>
+          <a class="btn btn--solid btn--big" id="unduh2" href="https://github.com/chabibnr/dev-browser/releases/latest">
+            <span class="btn__label">Unduh installer</span>
+            <span class="btn__meta" id="unduh2-meta">Windows x64</span>
+          </a>
+          <p class="note">
+            Atau <a href="https://github.com/chabibnr/dev-browser">bangun sendiri dari sumbernya</a> —
+            <code>npm install</code>, <code>npm run dist</code>.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__row">
+        <p>
+          <strong>DEV Browser</strong> — dibuat oleh
+          <a href="https://github.com/chabibnr">Chabib Nurozak</a>. Lisensi MIT.
+        </p>
+        <p class="footer__links">
+          <a href="https://github.com/chabibnr/dev-browser">Sumber</a>
+          <a href="https://github.com/chabibnr/dev-browser/releases">Rilis</a>
+          <a href="https://github.com/chabibnr/dev-browser/issues">Lapor masalah</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

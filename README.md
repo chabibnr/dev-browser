@@ -277,6 +277,28 @@ Browser" lama; uninstall yang lama sekali secara manual.
 - **Memori.** Tiap tab adalah satu proses renderer Chromium (±80–150 MB). Tab hasil
   restore baru dimuat saat diklik, tapi tab yang sudah terbuka tetap hidup.
 
+## Halaman Muka
+
+`docs/` berisi halaman statis yang disajikan GitHub Pages. Tidak ada langkah
+build: HTML, CSS, dan satu berkas JS, semuanya ditulis tangan.
+
+Dua hal yang sengaja dibuat begitu:
+
+- **Versi rilis diambil saat halaman dibuka**, bukan ditulis tetap. Kalau
+  ditulis tetap, tiap rilis menuntut halaman ini ikut diedit — dan cepat atau
+  lambat akan terlupa, lalu halaman muka menawarkan versi lama. Bila panggilan
+  API gagal, tombolnya jatuh ke `/releases/latest` yang selalu benar.
+- **Animasi masuk baru berlaku setelah skrip di `<head>` berjalan**, dan ada
+  penghitung waktu yang membuka paksa semuanya andai pengamat gulir tidak pernah
+  hidup. Menyembunyikan isi lewat CSS lalu menyerahkan pemunculannya kepada satu
+  berkas JS berarti satu kegagalan muat menghasilkan halaman kosong.
+
+Untuk melihatnya secara lokal:
+
+```bash
+python -m http.server 4321 --directory docs
+```
+
 ## Struktur
 
 ```

@@ -1,0 +1,1074 @@
+/*
+ * DEV Browser — halaman muka.
+ *
+ * Arahnya gambar teknik di atas kertas: kertas tulang, tinta hitam-hangat,
+ * garis rambut, dan grid samar. Delapan warna tab aplikasi adalah SATU-SATUNYA
+ * elemen jenuh di seluruh halaman — itulah identitas produknya, jadi tidak ada
+ * warna lain yang boleh berebut perhatian dengannya.
+ */
+
+:root {
+  --paper: #f2eee5;
+  --paper-2: #eae5d9;
+  --ink: #191510;
+  --ink-2: #4d463c;
+  --ink-3: #8a8175;
+  --rule: #cfc7b7;
+  --rule-soft: #ded7c8;
+  --accent: #1a73e8;
+
+  --shell: #dee1e6;
+  --shell-raised: #ffffff;
+
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'IBM Plex Sans', ui-sans-serif, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --gutter: clamp(20px, 5vw, 72px);
+  --measure: 1300px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  /* Grid kertas milimeter, dua lapis: kotak halus di dalam kotak besar. */
+  background-image:
+    linear-gradient(var(--rule-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rule-soft) 1px, transparent 1px);
+  background-size: 88px 88px, 88px 88px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Butiran halus di atas segalanya. pointer-events dimatikan agar tidak
+   menghalangi klik pada demo di bawahnya. */
+.grain {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+  z-index: 9;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-variation-settings: 'SOFT' 22, 'WONK' 1;
+  letter-spacing: -0.015em;
+  line-height: 1.06;
+  margin: 0;
+  text-wrap: balance;
+}
+
+em {
+  font-style: italic;
+  font-variation-settings: 'SOFT' 44, 'WONK' 1;
+}
+
+a {
+  color: inherit;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-soft);
+  border-radius: 4px;
+  padding: 0.05em 0.34em;
+}
+
+/* ------------------------------------------------------------- masthead */
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px var(--gutter);
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.brand img {
+  border-radius: 6px;
+}
+
+.masthead__nav {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  font-size: 14px;
+}
+
+.masthead__nav a {
+  text-decoration: none;
+  color: var(--ink-2);
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.18s, border-color 0.18s;
+}
+
+.masthead__nav a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.masthead__repo {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .masthead__nav a:not(.masthead__repo) {
+    display: none;
+  }
+}
+
+/* ----------------------------------------------------------------- hero */
+
+.hero {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: clamp(48px, 8vw, 110px) var(--gutter) clamp(40px, 6vw, 72px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
+  gap: clamp(32px, 4vw, 64px);
+  align-items: center;
+}
+
+@media (max-width: 980px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.eyebrow__rule {
+  width: 38px;
+  height: 1px;
+  background: var(--ink-3);
+  flex: 0 0 auto;
+}
+
+h1 {
+  font-size: clamp(40px, 5.4vw, 68px);
+  margin-bottom: 26px;
+}
+
+.lede {
+  max-width: 46ch;
+  margin: 0 0 34px;
+  font-size: clamp(16px, 1.5vw, 18px);
+  color: var(--ink-2);
+}
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.btn {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  padding: 12px 22px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  text-decoration: none;
+  transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.16s, background 0.16s;
+}
+
+/* Bayangan padat, bukan blur: menegaskan kesan cetakan di atas kertas. */
+.btn--solid {
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--ink) 22%, transparent);
+}
+
+.btn--solid:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 color-mix(in srgb, var(--ink) 30%, transparent);
+}
+
+.btn--solid:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 0 color-mix(in srgb, var(--ink) 22%, transparent);
+}
+
+.btn--ghost {
+  align-self: center;
+  padding: 12px 20px;
+  border-color: var(--rule);
+  color: var(--ink-2);
+}
+
+.btn--ghost:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.btn__label {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.btn__meta {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.3;
+  opacity: 0.62;
+}
+
+.btn--big {
+  padding: 16px 34px;
+}
+
+.btn--big .btn__label {
+  font-size: 17px;
+}
+
+.note {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--ink-3);
+}
+
+.note a {
+  color: var(--ink-2);
+}
+
+/* ----------------------------------------------------------- demo chrome */
+
+.demo {
+  margin: 0;
+}
+
+.demo__frame {
+  position: relative;
+}
+
+/* Jendela aplikasi ditiru apa adanya: pita bilah tab keabuan, toolbar putih
+   yang menyatu dengan tab aktif, sudut bawah tab aktif disikukan. */
+.chrome {
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--shell);
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  box-shadow:
+    0 1px 0 0 rgb(255 255 255 / 55%) inset,
+    0 18px 44px -18px rgb(25 21 16 / 34%),
+    0 4px 12px -6px rgb(25 21 16 / 22%);
+}
+
+.strip {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 38px;
+  padding: 4px 6px 0;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 10px;
+  margin-bottom: 3px;
+  border: 1px solid #c9ced6;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  color: #3c4043;
+  cursor: pointer;
+  transition: background 0.16s, border-color 0.16s;
+}
+
+.tab:hover {
+  background: color-mix(in srgb, var(--c, #5b9dff) 26%, var(--shell));
+  color: #3c4043;
+}
+
+.tab {
+  --c: #5b9dff;
+  background: color-mix(in srgb, var(--c) 15%, var(--shell));
+  border-color: color-mix(in srgb, var(--c) 38%, #c9ced6);
+  color: #5f6368;
+}
+
+.tab.is-active {
+  background: color-mix(in srgb, var(--c) 17%, #fff);
+  border-color: transparent;
+  box-shadow: 0 -1px 3px -1px rgb(25 21 16 / 12%);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.tab__dot {
+  width: 3px;
+  height: 15px;
+  border-radius: 2px;
+  background: var(--c);
+  flex: 0 0 auto;
+}
+
+.tab__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.strip__plus {
+  align-self: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  color: #5f6368;
+  font-size: 15px;
+  flex: 0 0 auto;
+}
+
+.strip__wc {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 4px 0 14px;
+  flex: 0 0 auto;
+}
+
+.strip__wc i {
+  width: 9px;
+  height: 1.5px;
+  background: #9aa0a6;
+}
+
+.strip__wc i:nth-child(2) {
+  height: 8px;
+  width: 8px;
+  background: none;
+  border: 1.5px solid #9aa0a6;
+}
+
+.strip__wc i:nth-child(3) {
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 0 transparent;
+  position: relative;
+}
+
+.strip__wc i:nth-child(3)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #9aa0a6;
+  transform: rotate(90deg);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 12px;
+  background: var(--shell-raised);
+}
+
+.toolbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.ic {
+  width: 15px;
+  height: 15px;
+  border: 1.8px solid #5f6368;
+  border-width: 1.8px 1.8px 0 0;
+  display: inline-block;
+}
+
+.ic--back {
+  transform: rotate(-135deg);
+}
+
+.ic--fwd {
+  transform: rotate(45deg);
+}
+
+.ic--rel {
+  border-radius: 50%;
+  border-width: 1.8px;
+  border-right-color: transparent;
+  transform: rotate(-30deg);
+}
+
+.ic--dev {
+  border-width: 1.8px;
+  border-radius: 3px;
+}
+
+/* Inilah detail yang dijual: blok address bar mengambil warna tab aktif. */
+.omni {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 30px;
+  padding: 0 13px;
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--c, #5b9dff) 20%, #f1f3f4);
+  border: 1px solid color-mix(in srgb, var(--c, #5b9dff) 46%, #f1f3f4);
+  font-size: 12.5px;
+  color: #3c4043;
+  transition: background 0.34s ease, border-color 0.34s ease;
+}
+
+.omni__lock {
+  width: 9px;
+  height: 8px;
+  border: 1.6px solid #5f6368;
+  border-radius: 2px;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.omni__lock::before {
+  content: '';
+  position: absolute;
+  left: 1.5px;
+  top: -4px;
+  width: 5px;
+  height: 5px;
+  border: 1.6px solid #5f6368;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+}
+
+.omni__url {
+  font-family: var(--mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page {
+  background: #fff;
+  padding: 22px 20px 26px;
+  min-height: 176px;
+}
+
+.page__card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 15px;
+  border: 1px solid #e3e6ea;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--c, #5b9dff) 7%, #fff);
+  transition: background 0.34s ease;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c, #5b9dff);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: background 0.34s ease;
+}
+
+.page__who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.page__who strong {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f1f1f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page__who span {
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.page__badge {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #5f6368;
+  border: 1px dashed #cdd2d8;
+  border-radius: 20px;
+  padding: 2px 9px;
+}
+
+.page__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.page__bars i {
+  height: 7px;
+  border-radius: 4px;
+  background: #edf0f3;
+}
+
+/* Nomor anotasi, dipatok dalam persen supaya ikut menyusut bersama mockup. */
+.pin {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px -2px rgb(25 21 16 / 40%);
+}
+
+.pin--1 {
+  left: -11px;
+  top: 2%;
+}
+
+.pin--2 {
+  left: 30%;
+  top: -13px;
+}
+
+.pin--3 {
+  right: -11px;
+  top: 30%;
+}
+
+/*
+ * Layar sempit. Seluruh gunanya demo ini ada pada NAMA tabnya — begitu keempatnya
+ * menyusut jadi "T…" dan "To…", yang tersisa cuma gambar tanpa arti. Jadi yang
+ * dikorbankan adalah hiasannya: tombol window, tombol tambah, dan nomor anotasi
+ * dilepas untuk mengembalikan ruang kepada nama.
+ */
+@media (max-width: 560px) {
+  .pin,
+  .strip__wc,
+  .strip__plus {
+    display: none;
+  }
+
+  .strip {
+    padding: 4px 5px 0;
+  }
+
+  .tab {
+    gap: 5px;
+    padding: 0 7px;
+    font-size: 11px;
+  }
+
+  .tab__dot {
+    height: 13px;
+  }
+
+  .toolbar {
+    gap: 8px;
+    padding: 0 9px;
+  }
+
+  .omni {
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .page {
+    padding: 16px 14px 20px;
+    min-height: 0;
+  }
+
+  .page__badge {
+    display: none;
+  }
+}
+
+.demo__hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-3);
+  text-align: center;
+}
+
+.demo__hint-arrow {
+  animation: nudge 2.4s ease-in-out infinite;
+}
+
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ---------------------------------------------------------------- bands */
+
+.band {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: clamp(56px, 8vw, 104px) var(--gutter);
+}
+
+.band--tint {
+  max-width: none;
+  background: var(--paper-2);
+  border-block: 1px solid var(--rule-soft);
+}
+
+.band--tint > * {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+.band__head {
+  font-size: clamp(30px, 4vw, 46px);
+  margin-bottom: clamp(32px, 4vw, 52px);
+}
+
+h2 {
+  font-size: clamp(28px, 3.6vw, 44px);
+}
+
+/* --------------------------------------------------------------- legend */
+
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: clamp(28px, 4vw, 54px);
+}
+
+.legend li {
+  position: relative;
+  padding-top: 22px;
+  border-top: 1px solid var(--ink);
+}
+
+.legend b {
+  position: absolute;
+  top: -13px;
+  left: 0;
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.legend h3 {
+  font-size: 21px;
+  margin: 14px 0 10px;
+}
+
+.legend p {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+/* ---------------------------------------------------------------- split */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(32px, 6vw, 80px);
+  align-items: center;
+}
+
+.split--narrow {
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .split,
+  .split--narrow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.split__text h2 {
+  margin-bottom: 20px;
+}
+
+.split__text p {
+  margin: 0 0 16px;
+  max-width: 44ch;
+  color: var(--ink-2);
+  font-size: 15.5px;
+}
+
+/* Diagram banding: lima window terpisah lawan satu window berisi lima tab. */
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 4vw, 44px);
+  align-items: end;
+}
+
+.compare__col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.compare__label,
+.compare__cap {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.compare__cap {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+
+.wins {
+  position: relative;
+  width: 100%;
+  height: 132px;
+}
+
+.wins i {
+  position: absolute;
+  width: 62%;
+  height: 46px;
+  border: 1.5px solid var(--ink);
+  border-top-width: 9px;
+  border-radius: 4px;
+  border-top-color: var(--c);
+  background: var(--paper);
+}
+
+.wins i:nth-child(1) {
+  left: 0;
+  top: 0;
+}
+.wins i:nth-child(2) {
+  left: 9%;
+  top: 20px;
+}
+.wins i:nth-child(3) {
+  left: 18%;
+  top: 40px;
+}
+.wins i:nth-child(4) {
+  left: 27%;
+  top: 60px;
+}
+.wins i:nth-child(5) {
+  left: 36%;
+  top: 80px;
+}
+
+.wins--one .wins__one {
+  position: absolute;
+  inset: 30px 0 auto;
+  width: 100%;
+  height: 72px;
+  display: flex;
+  gap: 3px;
+  padding: 5px 5px 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  background: var(--paper);
+}
+
+.wins__one u {
+  flex: 1;
+  height: 9px;
+  border-radius: 3px 3px 0 0;
+  background: var(--c);
+}
+
+/* ----------------------------------------------------------------- grid */
+
+/*
+ * Lebar minimum 320px sengaja: dengan itu jumlah kolom tidak pernah melewati 3,
+ * sehingga enam kartu SELALU terbagi rata (3×2, 2×3, atau 1×6). Pada 268px
+ * kolomnya menjadi empat dan menyisakan dua sel kosong — dan karena latar grid
+ * ini adalah garisnya sendiri, sel kosong tampil sebagai blok abu yang mencolok.
+ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+.card {
+  background: var(--paper);
+  padding: clamp(24px, 3vw, 34px);
+  transition: background 0.2s;
+}
+
+.card:hover {
+  background: #fbf9f4;
+}
+
+.card__no {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.1em;
+}
+
+.card h3 {
+  font-size: 20px;
+  margin: 12px 0 10px;
+}
+
+.card p {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+/* Baris viewport mini yang membungkus — bentuk fitur uji responsif. */
+.vps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--rule);
+}
+
+.vps i {
+  width: var(--w);
+  height: var(--h);
+  border: 1.5px solid var(--ink-3);
+  border-top-width: 4px;
+  border-radius: 3px;
+}
+
+/* --------------------------------------------------------------- limits */
+
+.limits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.limits li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.limits li:first-child {
+  border-top: 1px solid var(--rule);
+}
+
+.limits strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------- closer */
+
+.closer {
+  padding: clamp(70px, 10vw, 132px) var(--gutter);
+  text-align: center;
+}
+
+.closer__inner {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.closer h2 {
+  font-size: clamp(32px, 5vw, 56px);
+  margin-bottom: 18px;
+}
+
+#rilis-baris {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-3);
+  margin: 0 0 30px;
+}
+
+.closer .btn {
+  align-items: center;
+}
+
+.closer .note {
+  margin-top: 22px;
+}
+
+/* --------------------------------------------------------------- footer */
+
+.footer {
+  border-top: 1px solid var(--rule);
+  padding: 28px var(--gutter);
+  background: var(--paper-2);
+}
+
+.footer__row {
+  max-width: var(--measure);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 32px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer__links {
+  display: flex;
+  gap: 22px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+
+/* --------------------------------------------------------------- motion */
+
+/* Disembunyikan HANYA bila skrip kepala sempat menandai <html>. Lihat alasannya
+   di index.html — tanpa pagar ini, satu berkas gagal muat berarti halaman kosong. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.66s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms),
+    transform 0.66s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms);
+}
+
+/*
+ * Hormati pengguna yang meminta gerakan dikurangi: seluruh isi harus tetap
+ * terlihat, jadi keadaan awal `reveal` ikut dinetralkan — bukan cuma
+ * transisinya dimatikan, yang justru akan menyembunyikan halaman selamanya.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .js .reveal,
+  .reveal,
+  .reveal.is-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .demo__hint-arrow {
+    animation: none;
+  }
+}
