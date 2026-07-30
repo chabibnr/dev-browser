@@ -1,0 +1,91 @@
+name: Rilis
+
+# Yang memicu rilis adalah **perubahan versi**, bukan setiap push.
+#
+# Tanpa penjaga itu, commit kedua ke master akan menabrak tag yang sudah ada dan
+# gagal — atau lebih buruk, menimpa installer yang sudah beredar dengan isi
+# berbeda di bawah nomor versi yang sama. Push yang tidak menaikkan `version`
+# di package.json berhenti di langkah pertama tanpa membangun apa pun.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Dua rilis yang berjalan bersamaan akan berebut tag yang sama.
+concurrency:
+  group: rilis
+  cancel-in-progress: false
+
+jobs:
+  rilis:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Tentukan apakah versi ini perlu dirilis
+        id: cek
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "v$version sudah punya rilis — dilewati."
+            echo "Naikkan version di package.json (dan tambahkan entri changelog) untuk merilis versi baru."
+            echo "rilis=tidak" >> "$GITHUB_OUTPUT"
+          else
+            echo "v$version belum dirilis — akan dibangun."
+            echo "rilis=ya" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pasang dependensi
+        if: steps.cek.outputs.rilis == 'ya'
+        run: npm ci
+
+      # Test menjalankan Electron sungguhan lewat playwright-core. Sengaja
+      # menghalangi rilis: installer yang gagal tesnya tidak boleh terbit.
+      - name: Test
+        if: steps.cek.outputs.rilis == 'ya'
+        run: npm test
+
+      # Gagal bila versinya tidak punya entri changelog — rilis tanpa catatan
+      # perubahan lebih baik dihentikan di sini daripada terlanjur terbit.
+      - name: Susun catatan rilis dari CHANGELOG
+        if: steps.cek.outputs.rilis == 'ya'
+        run: node scripts/release-notes.mjs > release-notes.md
+
+      # `--publish never` penting: default electron-builder adalah membuat rilis
+      # DRAFT, dan rilis draft tidak terlihat oleh electron-updater sama sekali,
+      # sehingga tidak ada satu pun klien yang tahu ada versi baru. Rilisnya
+      # dibuat langkah berikutnya dengan `gh`, yang langsung berstatus published.
+      - name: Build installer
+        if: steps.cek.outputs.rilis == 'ya'
+        run: npm run dist -- --publish never
+
+      # latest.yml WAJIB ikut: itulah satu-satunya berkas yang dibaca klien untuk
+      # mengetahui ada versi baru. Nama .exe harus persis sama dengan yang
+      # tertulis di dalamnya — lihat `artifactName` di electron-builder.yml,
+      # yang sengaja tidak berspasi karena GitHub mengubah spasi pada nama aset.
+      - name: Terbitkan rilis
+        if: steps.cek.outputs.rilis == 'ya'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${{ steps.cek.outputs.version }}"
+          gh release create "v$version" \
+            "release/dev-browser-$version-setup.exe" \
+            "release/dev-browser-$version-setup.exe.blockmap" \
+            "release/latest.yml" \
+            --title "DEV Browser $version" \
+            --notes-file release-notes.md

@@ -212,19 +212,34 @@ electron-updater membacanya dari situ.
 
 ### Menerbitkan versi baru
 
-1. Naikkan `version` di `package.json` dan tambahkan entrinya ke
-   `src/shared/changelog.ts`. Nomor versi tidak boleh dipakai dua kali.
-2. `npm run dist`.
-3. Buat rilis GitHub dengan tag `v<versi>`, lalu unggah **tiga** berkas dari
-   `release/`: `dev-browser-<versi>-setup.exe`, berkas `.blockmap`-nya, dan
-   `latest.yml`. Tanpa `latest.yml` tidak ada klien yang tahu ada versi baru;
-   tanpa `.blockmap` unduhannya tidak bisa memakai pembaruan diferensial.
-   Nama berkas **tidak boleh diubah**: `latest.yml` menyebut nama itu apa adanya.
-4. Ubah statusnya menjadi **published** — rilis draft tidak terlihat oleh klien
-   yang tidak login.
+Rilisnya otomatis. Yang perlu Anda lakukan hanya dua hal:
 
-Alternatifnya, `npx electron-builder --publish always` mengunggah ketiganya
-sendiri bila `GH_TOKEN` diisi.
+1. Naikkan `version` di `package.json`.
+2. Tambahkan entrinya ke `src/shared/changelog.ts`.
+
+Push ke `master`, dan `.github/workflows/release.yml` mengerjakan sisanya:
+menjalankan test, membangun installer, menyusun catatan rilis dari CHANGELOG,
+lalu menerbitkan rilis GitHub bertag `v<versi>` berisi installer, `.blockmap`,
+dan `latest.yml`.
+
+**Yang memicunya adalah perubahan versi, bukan setiap push.** Commit yang tidak
+menaikkan `version` berhenti di langkah pertama tanpa membangun apa pun. Tanpa
+penjaga itu, push kedua akan menabrak tag yang sudah ada — atau lebih buruk,
+menimpa installer yang sudah beredar dengan isi berbeda di bawah nomor versi
+yang sama.
+
+Lupa menulis entri changelog juga menghentikan rilis: `scripts/release-notes.mjs`
+keluar dengan galat, karena rilis tanpa catatan perubahan tidak berguna bagi
+siapa pun.
+
+Bagian yang mudah rusak diam-diam dikunci `tests/release.test.ts`: nama berkas
+yang diunggah workflow harus sama persis dengan `artifactName`, `latest.yml`
+harus ikut, dan electron-builder dilarang menerbitkan sendiri — default-nya
+membuat rilis **draft**, dan rilis draft tidak terlihat oleh electron-updater
+sama sekali.
+
+Kalau perlu manual: `npm run dist`, lalu unggah ketiga berkas itu ke rilis
+GitHub bertag `v<versi>` dengan status published.
 
 Dua hal yang mudah menjebak:
 
