@@ -54,6 +54,15 @@ jobs:
         if: steps.cek.outputs.rilis == 'ya'
         run: npm ci
 
+      # WAJIB sebelum test. Test meluncurkan `electron .`, yang memuat
+      # out/main/index.js — dan `out/` ada di .gitignore, jadi checkout bersih
+      # tidak punya berkas itu sama sekali. Tanpa langkah ini setiap peluncuran
+      # Electron timeout 20 detik dan SELURUH suite gagal, sementara di mesin
+      # lokal semuanya lolos karena `out/` masih tertinggal dari build sebelumnya.
+      - name: Build
+        if: steps.cek.outputs.rilis == 'ya'
+        run: npm run build
+
       # Test menjalankan Electron sungguhan lewat playwright-core. Sengaja
       # menghalangi rilis: installer yang gagal tesnya tidak boleh terbit.
       - name: Test

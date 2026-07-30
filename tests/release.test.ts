@@ -59,6 +59,17 @@ describe('workflow rilis', () => {
     expect(workflow.indexOf('npm test')).toBeGreaterThan(-1)
     expect(workflow.indexOf('npm test')).toBeLessThan(workflow.indexOf('npm run dist'))
   })
+
+  it('membangun out/ sebelum test, karena test meluncurkan `electron .`', () => {
+    // Pernah menggagalkan seluruh rilis. `out/` ada di .gitignore, jadi checkout
+    // bersih tidak punya main entry-nya; tiap peluncuran Electron timeout dan
+    // seluruh suite gagal — sementara di mesin lokal semuanya lolos karena `out/`
+    // masih tertinggal dari build sebelumnya. Gejalanya sama sekali tidak
+    // menunjuk ke penyebabnya, jadi urutannya dikunci di sini.
+    const build = workflow.indexOf('npm run build')
+    expect(build).toBeGreaterThan(-1)
+    expect(build).toBeLessThan(workflow.indexOf('npm test'))
+  })
 })
 
 describe('catatan rilis', () => {
